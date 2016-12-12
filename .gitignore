@@ -1,0 +1,4 @@
+node_modules
+.npmignore
+.DS_Store
+coverage

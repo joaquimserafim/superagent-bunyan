@@ -1,0 +1,24 @@
+{
+  "name": "superagent-bunyan",
+  "version": "0.0.0",
+  "description": "a plugin for superagent that uses bunyan to log the request and responses",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joaquimserafim/superagent-bunyan.git"
+  },
+  "keywords": [
+    "superagent",
+    "bunyan",
+    "log"
+  ],
+  "author": "@JoaquimSerafim",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joaquimserafim/superagent-bunyan/issues"
+  },
+  "homepage": "https://github.com/joaquimserafim/superagent-bunyan#readme"
+}
