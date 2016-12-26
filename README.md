@@ -25,7 +25,7 @@ superagentLogger(
 for more options to configure `bunyan.createLogger` or `log.child` check with [bunyan doc](https://github.com/trentm/node-bunyan#introduction)
 
 **Notes:**
-* should use the plugin after the definiton on the http methods
+* should use the plugin after the definiton of the http method to use
 * should use a middleware like `express-mw-correlation-id` to generate the `req.id` in your api/service and pass onto the `superagent-bunyan` function
 * will use `log.info` with http errors (status codes 4xx and 5xx)
 * will use `log.error` with socket errors
