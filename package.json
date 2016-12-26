@@ -3,8 +3,15 @@
   "version": "0.0.0",
   "description": "a plugin for superagent that uses bunyan to log the request and responses",
   "main": "index.js",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "coverage": "open coverage/lcov-report/index.html",
+    "coverage:check": "istanbul check-coverage --statements 100 --functions 100 --lines 100 --branches 100",
+    "test": "standard --fix && istanbul cover -x test.js _mocha test.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +27,22 @@
   "bugs": {
     "url": "https://github.com/joaquimserafim/superagent-bunyan/issues"
   },
-  "homepage": "https://github.com/joaquimserafim/superagent-bunyan#readme"
+  "homepage": "https://github.com/joaquimserafim/superagent-bunyan#readme",
+  "devDependencies": {
+    "bunyan": "^1.8.5",
+    "chai": "^3.5.0",
+    "express": "^4.14.0",
+    "istanbul": "0.4.5",
+    "mocha": "^3.2.0",
+    "pre-commit": "^1.2.2",
+    "standard": "^8.6.0",
+    "superagent": "^3.3.1"
+  },
+  "engines": {
+    "node": ">=6.1"
+  },
+  "pre-commit": [
+    "test",
+    "coverage:check"
+  ]
 }
