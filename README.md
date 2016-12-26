@@ -22,10 +22,10 @@ superagentLogger(
 )
 ```
 
-for more options to configure `bunyan.createLogger` or `log.child` check on [bunyan doc](https://github.com/trentm/node-bunyan#introduction)
+for more options to configure `bunyan.createLogger` or `log.child` check with [bunyan doc](https://github.com/trentm/node-bunyan#introduction)
 
 **Notes:**
-* should use a middleware like `express-mw-correlation-id` to generate the `req.id` with your api/ervice and pass onto the `superagent-bunyan` function
+* should use a middleware like `express-mw-correlation-id` to generate the `req.id` in your api/service and pass onto the `superagent-bunyan` function
 * will use `log.info` with http errors (status codes 4xx and 5xx)
 * will use `log.error` with socket errors
 
@@ -45,7 +45,7 @@ request
   .use(superagentLogger(logger)))
   .end((err, res) => {})
 
-// should print 2 logs entries
+// should print 2 log entries
 // 1 - "msg":"start of the request"
 // 2 - "msg":"end of the request", this will print the statusCode and the body
 //

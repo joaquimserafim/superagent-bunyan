@@ -1,6 +1,6 @@
 {
   "name": "superagent-bunyan",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "a plugin for superagent that uses bunyan to log the request and responses",
   "main": "index.js",
   "files": [
