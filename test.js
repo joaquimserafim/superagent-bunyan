@@ -31,6 +31,10 @@ describe('superagent-bunyan', () => {
       res.send('Hello World!')
     })
 
+    app.post('/', (req, res) => {
+      res.send('ok')
+    })
+
     app.get('/whitrequestid', (req, res) => {
       expect(req.headers['x-request-id']).to.exist
       res.send('Hello World!')
@@ -53,6 +57,18 @@ describe('superagent-bunyan', () => {
   it('normal request', (done) => {
     request
       .get('http://localhost:3000')
+      .use(superagentLogger(logger))
+      .end((err, res) => {
+        expect(err).to.be.a('null')
+        expect(res).to.be.an('object')
+        done()
+      })
+  })
+
+  it('POST request', (done) => {
+    request
+      .post('http://localhost:3000')
+      .send({msg: 'More human than human is our motto'})
       .use(superagentLogger(logger))
       .end((err, res) => {
         expect(err).to.be.a('null')
