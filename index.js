@@ -8,28 +8,27 @@ max-len: ["error", 80]
 
 module.exports = logger
 
-function logger (log, sendId = false, reqId = id(), header = 'X-Request-ID') {
-  let endTime = 0
+function logger (bunyan, requestId) {
 
-  log.constructor.stdSerializers.res = resSerializer
+  return runLogger
 
-  return setLogger
-
-  function setLogger (req) {
+  function runLogger (req) {
+    let endTime = 0
     const startTime = process.hrtime()
 
-    req.id = reqId
-    sendId && req.set(header, req.id)
+    req.id = requestId || id()
 
-    req.log = log.child(
+    bunyan.constructor.stdSerializers.res = serializer
+
+    const log = bunyan.child(
       {
         origin: 'superagent',
         id: req.id,
-        serializers: log.constructor.stdSerializers
+        serializers: bunyan.constructor.stdSerializers
       }
     )
 
-    req.log.info({req: req, payload: req.body}, 'start of the request')
+    log.info({req: req, payload: req.body}, 'start of the request')
 
     req.once('end', onEnd)
     req.once('error', onError)
@@ -42,11 +41,20 @@ function logger (log, sendId = false, reqId = id(), header = 'X-Request-ID') {
     }
 
     function onError (err) {
-      req.log.error(err, 'end of the request')
+      // if isn't a http error the onend will not be called
+      endTime = endTime || process.hrtime(startTime)
+
+      log.error(
+        {
+          err: err,
+          duration: endTime[0] * 1e3 + endTime[1] * 1e-6
+        },
+        'end of the request'
+      )
     }
 
     function onResponse (res) {
-      req.log.info(
+      log.info(
         {
           res: res,
           duration: endTime[0] * 1e3 + endTime[1] * 1e-6
@@ -63,7 +71,7 @@ function id () {
     (Math.random() * Math.pow(36, 8) << 0).toString(36)
 }
 
-function resSerializer (res = {}) {
+function serializer (res = {}) {
   return {
     statusCode: res.statusCode,
     header: res._header,
