@@ -14,19 +14,16 @@ a plugin for superagent that uses bunyan to log the request and responses
 `const superagentLogger = require('superagent-bunyan')`
 
 ```js
-superagentLogger(
-    bunyans createLogger object or child object[,
-    if sends the req id on headers = false][,
-    uuid = uses a simple id generator][,
-    header name to use = 'X-Request-ID']
-)
+superagentLogger(bunyan_logger[, options])
 ```
 
-for more options to configure `bunyan.createLogger` or `log.child` check with [bunyan doc](https://github.com/trentm/node-bunyan#introduction)
+* **bunyan logger** should be a bunyan createLogger or child object
+* **requestId** uuid, by default will try to pick up from the headers injected in superagent, or can be set by using a module/function to generate the requestId, by default will use an internal id generator
 
-**Notes:**
+**some notes:**
 * should use the plugin after the definiton of the http method to use
-* should use a middleware like `express-mw-correlation-id` to generate the `req.id` in your api/service and pass onto the `superagent-bunyan` function
+* to capture the `X-Request-ID` should use this plugin after setting the `X-Request-ID` header
+* for more options to configure `bunyan.createLogger` or `log.child` check with [bunyan doc](https://github.com/trentm/node-bunyan#introduction)
 * will use `log.info` with http errors (status codes 4xx and 5xx)
 * will use `log.error` with socket errors
 
@@ -46,6 +43,7 @@ request
   .use(superagentLogger(logger)))
   .end((err, res) => {})
 
+//
 // should print 2 log entries
 // 1 - "msg":"start of the request"
 // 2 - "msg":"end of the request", this will print the statusCode and the body
@@ -86,6 +84,17 @@ request
   "time": "2016-12-26T16:57:22.159Z",
   "v": 0
 }
+
+//
+// setting the X-Request-ID with superagent
+// and superagent-bunyan will use for the req.id
+//
+
+request
+  .get('http://localhost:3000')
+  .set('X-Request-ID', uuid)
+  .use(superagentLogger(logger)))
+  .end((err, res) => {})
 ```
 
 #### ISC License (ISC)

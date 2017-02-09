@@ -1,7 +1,7 @@
 {
   "name": "superagent-bunyan",
-  "version": "1.1.0",
-  "description": "a plugin for superagent that uses bunyan to log the request and responses",
+  "version": "2.0.0",
+  "description": "a plugin for superagent that uses bunyan to log the request s and responses",
   "main": "index.js",
   "files": [
     "LICENSE",
@@ -31,13 +31,15 @@
   "devDependencies": {
     "bunyan": "^1.8.5",
     "chai": "^3.5.0",
-    "express": "^4.14.0",
+    "express": "^4.14.1",
+    "fn-spy": "^2.0.0",
     "istanbul": "0.4.5",
     "mocha": "^3.2.0",
     "pre-commit": "^1.2.2",
     "standard": "^8.6.0",
-    "superagent": "^3.3.1"
+    "superagent": "^3.4.1"
   },
+  "dependencies": {},
   "engines": {
     "node": ">=6.1"
   },
