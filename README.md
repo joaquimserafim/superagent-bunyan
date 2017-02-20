@@ -24,8 +24,7 @@ superagentLogger(bunyan_logger[, options])
 * should use the plugin after the definiton of the http method to use
 * to capture the `X-Request-ID` should use this plugin after setting the `X-Request-ID` header
 * for more options to configure `bunyan.createLogger` or `log.child` check with [bunyan doc](https://github.com/trentm/node-bunyan#introduction)
-* will use `log.info` with http errors (status codes 4xx and 5xx)
-* will use `log.error` with socket errors
+* will use `log.error` with http errors (status codes 4xx and 5xx) and socket errors but for the http errors `res` will have the statusCode
 
 ### example
 ```js
@@ -87,7 +86,7 @@ request
 
 //
 // setting the X-Request-ID with superagent
-// and superagent-bunyan will use for the req.id
+// and superagent-bunyan will use to set the req.id
 //
 
 request
