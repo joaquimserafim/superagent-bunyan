@@ -6,6 +6,9 @@ max-len: ["error", 80]
 */
 'use strict'
 
+const getPropValue  = require('get-property-value')
+const objectSize    = require('object.size')
+
 module.exports = logger
 
 function logger (bunyan, requestId) {
@@ -13,10 +16,11 @@ function logger (bunyan, requestId) {
   return runLogger
 
   function runLogger (req) {
-    let endTime = 0
+    let appendRes   = {}
+    let endTime     = 0
     const startTime = process.hrtime()
 
-    req.id = requestId || id()
+    req.id = requestId || getPropValue(req.header, 'X-Request-ID') || id()
 
     bunyan.constructor.stdSerializers.res = serializer
 
@@ -28,7 +32,7 @@ function logger (bunyan, requestId) {
       }
     )
 
-    log.info({req: req, payload: req.body}, 'start of the request')
+    log.info({req: req, payload: req.body, qs: req.qs}, 'start of the request')
 
     req.once('end', onEnd)
     req.once('error', onError)
@@ -46,6 +50,7 @@ function logger (bunyan, requestId) {
 
       log.error(
         {
+          res: appendRes,
           err: err,
           duration: endTime[0] * 1e3 + endTime[1] * 1e-6
         },
@@ -53,14 +58,20 @@ function logger (bunyan, requestId) {
       )
     }
 
+    // in case of res.error should fallback to the error emitter
+    // and should pass the res object
     function onResponse (res) {
-      log.info(
-        {
-          res: res,
-          duration: endTime[0] * 1e3 + endTime[1] * 1e-6
-        },
-        'end of the request'
-      )
+      if (res.error) {
+        appendRes = res
+      } else {
+        log.info(
+          {
+            res: res,
+            duration: endTime[0] * 1e3 + endTime[1] * 1e-6
+          },
+          'end of the request'
+        )
+      }
     }
   }
 }
@@ -71,10 +82,10 @@ function id () {
     (Math.random() * Math.pow(36, 8) << 0).toString(36)
 }
 
-function serializer (res = {}) {
+function serializer (res) {
   return {
     statusCode: res.statusCode,
     header: res._header,
-    body: Object.keys(res.body).length ? res.body : res.text
+    body: objectSize(res.body) ? res.body : res.text
   }
 }
