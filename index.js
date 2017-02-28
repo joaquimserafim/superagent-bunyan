@@ -8,6 +8,7 @@ max-len: ["error", 80]
 
 const getPropValue  = require('get-property-value')
 const objectSize    = require('object.size')
+const url           = require('url')
 
 module.exports = logger
 
@@ -22,17 +23,19 @@ function logger (bunyan, requestId) {
 
     req.id = requestId || getPropValue(req.header, 'X-Request-ID') || id()
 
-    bunyan.constructor.stdSerializers.res = serializer
-
     const log = bunyan.child(
       {
         origin: 'superagent',
         id: req.id,
-        serializers: bunyan.constructor.stdSerializers
+        serializers: {
+          err: bunyan.constructor.stdSerializers.err,
+          req: reqSerializer,
+          res: resSerializer
+        }
       }
     )
 
-    log.info({req: req, payload: req.body, qs: req.qs}, 'start of the request')
+    log.info({req: req}, 'start of the request')
 
     req.once('end', onEnd)
     req.once('error', onError)
@@ -82,10 +85,23 @@ function id () {
     (Math.random() * Math.pow(36, 8) << 0).toString(36)
 }
 
-function serializer (res) {
+function resSerializer (res) {
+
   return {
     statusCode: res.statusCode,
-    header: res._header,
+    headers: res.headers,
     body: objectSize(res.body) ? res.body : res.text
+  }
+}
+
+function reqSerializer (req) {
+
+  return {
+    method: req.method,
+    url: req.url,
+    qs: objectSize(req.qs) ? req.qs : undefined,
+    path: req.url && url.parse(req.url).pathname,
+    body: req._data && req._data.msg,
+    headers: req.header
   }
 }

@@ -184,9 +184,31 @@ describe('superagent-bunyan', () => {
           expect(res).to.be.an('object')
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
             expect(log2.err).to.not.exist
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
+            done()
+          })
+        })
+    })
+
+    it('request with query string', (done) => {
+      request
+        .get('http://localhost:3000')
+        .query({a: 1, b: 2})
+        .use(superagentLogger(logger))
+        .end((err, res) => {
+          expect(err).to.be.a('null')
+          expect(res).to.be.an('object')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('object')
+            expect(log2.err).to.not.exist
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
             done()
           })
         })
@@ -202,9 +224,16 @@ describe('superagent-bunyan', () => {
           expect(res).to.be.an('object')
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
+            expect(log1.req.method).to.be.equal('POST')
+            expect(log1.req.url).to.be
+              .equal('http://localhost:3000')
+            expect(log1.req.body).to.be
+              .equal('More human than human is our motto')
             expect(log2.err).to.not.exist
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
             done()
           })
         })
@@ -220,10 +249,13 @@ describe('superagent-bunyan', () => {
           expect(res.body).to.be.deep.equal({msg: 'Hello World!'})
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
+            expect(log1.req.path).to.be.equal('/json')
             expect(log2.err).to.not.exist
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.body).to.be.deep.equal({msg: 'Hello World!'})
+            expect(log2.res.headers).to.be.an('object')
             done()
           })
         })
@@ -240,9 +272,12 @@ describe('superagent-bunyan', () => {
           expect(res).to.be.an('object')
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('object')
+            expect(log1.req.path).to.be.equal('/someuuid')
             expect(log2.err).to.not.exist
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
             done()
           })
         })
@@ -262,9 +297,11 @@ describe('superagent-bunyan', () => {
           expect(res).to.be.an('object')
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
             expect(log2.err).to.not.exist
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
             done()
           })
         })
@@ -278,9 +315,11 @@ describe('superagent-bunyan', () => {
           expect(err).to.exist
 
           testLogRecords(getRecords(3), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
             expect(log2.err).to.be.an('object')
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(404)
+            expect(log2.res.headers).to.be.an('object')
             expect(log2.err.name).to.be.equal('Error')
             done()
           })
@@ -295,6 +334,7 @@ describe('superagent-bunyan', () => {
           expect(err).to.exist
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
             expect(log2.res).to.be.an('object')
             expect(log2.err).to.be.an('object')
             expect(log2.err.name).to.be.equal('Error')
@@ -306,7 +346,7 @@ describe('superagent-bunyan', () => {
 })
 
 //
-// generic tests
+// test some of the props that should exist with the `log`
 //
 
 function testLogRecords (records, runExtraExpections) {
@@ -316,6 +356,7 @@ function testLogRecords (records, runExtraExpections) {
   runExtraExpections(records[0], records[1])
 
   function each (record, index) {
+    // default values for both entries
     expect(record.name).to.be.equal('superagent-bunyan')
     expect(record.id).to.exist
     expect(record.hostname).to.exist
@@ -324,14 +365,14 @@ function testLogRecords (records, runExtraExpections) {
     expect(record.origin).to.be.equal('superagent')
     expect(record.time).to.exist
 
+    // the initial request
     if (!index) {
       expect(record.msg).to.be.equal('start of the request')
       expect(record.req).to.be.an('object')
       expect(record.req.method).to.be.a('string')
       expect(record.req.url).to.be.a('string')
       expect(record.req.headers).to.be.an('object')
-      expect(record.qs).to.be.an('object')
-    } else {
+    } else { // the response
       expect(record.msg).to.be.equal('end of the request')
       expect(record.duration).to.be.a('number')
     }
