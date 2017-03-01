@@ -228,8 +228,8 @@ describe('superagent-bunyan', () => {
             expect(log1.req.method).to.be.equal('POST')
             expect(log1.req.url).to.be
               .equal('http://localhost:3000')
-            expect(log1.req.body).to.be
-              .equal('More human than human is our motto')
+            expect(log1.req.body).to.be.deep
+              .equal({msg: 'More human than human is our motto'})
             expect(log2.err).to.not.exist
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
