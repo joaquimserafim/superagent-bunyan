@@ -101,7 +101,7 @@ function reqSerializer (req) {
     url: req.url,
     qs: objectSize(req.qs) ? req.qs : undefined,
     path: req.url && url.parse(req.url).pathname,
-    body: req._data && req._data.msg,
+    body: req._data,
     headers: req.header
   }
 }
