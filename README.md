@@ -53,7 +53,7 @@ request
   "hostname": "local",
   "pid": 54073,
   "origin": "superagent", // LOG ORIGIN
-  "id": "ix6btz2q--wyq997", // REQUEST ID
+  "req_id": "ix6btz2q--wyq997", // REQUEST ID
   "level": 30,
   "req": { // REQUEST
     "method": "GET",
@@ -72,7 +72,7 @@ request
   "hostname": "local",
   "pid": 54073,
   "origin": "superagent",// LOG ORIGIN
-  "id": "ix6btz2q--wyq997", // REQUEST ID
+  "req_id": "ix6btz2q--wyq997", // REQUEST ID
   "level": 30,
   "res": {  // RESPONSE STATUS AND PAYLOAD
     "statusCode": 200,
