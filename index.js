@@ -26,7 +26,7 @@ function logger (bunyan, requestId) {
     const log = bunyan.child(
       {
         origin: 'superagent',
-        id: req.id,
+        req_id: req.id,
         serializers: {
           err: bunyan.constructor.stdSerializers.err,
           req: reqSerializer,

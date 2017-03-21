@@ -358,7 +358,7 @@ function testLogRecords (records, runExtraExpections) {
   function each (record, index) {
     // default values for both entries
     expect(record.name).to.be.equal('superagent-bunyan')
-    expect(record.id).to.exist
+    expect(record.req_id).to.exist
     expect(record.hostname).to.exist
     expect(record.pid).to.be.a('number')
     expect(record.level).to.be.a('number')

@@ -1,6 +1,6 @@
 {
   "name": "superagent-bunyan",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "a plugin for superagent that uses bunyan to log the request s and responses",
   "main": "index.js",
   "files": [
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/joaquimserafim/superagent-bunyan#readme",
   "devDependencies": {
-    "bunyan": "^1.8.5",
+    "bunyan": "^1.8.9",
     "chai": "^3.5.0",
     "express": "^4.14.1",
     "fn-spy": "^2.0.0",
@@ -37,7 +37,7 @@
     "mocha": "^3.2.0",
     "pre-commit": "^1.2.2",
     "standard": "^8.6.0",
-    "superagent": "^3.4.1"
+    "superagent": "^3.5.1"
   },
   "dependencies": {
     "get-property-value": "^2.0.0",
