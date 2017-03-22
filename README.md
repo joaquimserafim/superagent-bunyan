@@ -14,7 +14,7 @@ a plugin for superagent that uses bunyan to log the request and responses
 `const superagentLogger = require('superagent-bunyan')`
 
 ```js
-superagentLogger(bunyan_logger[, options])
+superagentLogger(bunyan_logger[, requestId])
 ```
 
 * **bunyan logger** should be a bunyan createLogger or child object
