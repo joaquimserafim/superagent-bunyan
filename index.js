@@ -21,7 +21,7 @@ function logger (bunyan, requestId) {
     let endTime     = 0
     const startTime = process.hrtime()
 
-    const url = req.url
+    const service = req.url
 
     req.id = requestId || getPropValue(req.header, 'X-Request-ID') || id()
 
@@ -56,7 +56,7 @@ function logger (bunyan, requestId) {
       log.error(
         {
           res: appendRes,
-          url: url,
+          service: service,
           err: err,
           duration: endTime[0] * 1e3 + endTime[1] * 1e-6
         },
@@ -73,7 +73,7 @@ function logger (bunyan, requestId) {
         log.info(
           {
             res: res,
-            url: url,
+            service: service,
             duration: endTime[0] * 1e3 + endTime[1] * 1e-6
           },
           'end of the request'
