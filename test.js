@@ -374,6 +374,7 @@ function testLogRecords (records, runExtraExpections) {
       expect(record.req.headers).to.be.an('object')
     } else { // the response
       expect(record.msg).to.be.equal('end of the request')
+      expect(record.url).to.be.a('string')
       expect(record.duration).to.be.a('number')
     }
   }
