@@ -14,11 +14,12 @@ a plugin for superagent that uses bunyan to log the request and responses
 `const superagentLogger = require('superagent-bunyan')`
 
 ```js
-superagentLogger(bunyan_logger[, requestId])
+superagentLogger(bunyan_logger[, requestId, extra])
 ```
 
 * **bunyan logger** should be a bunyan createLogger or child object
 * **requestId** uuid, by default will try to pick up from the headers injected in superagent, or can be set by using a module/function to generate the requestId, by default will use an internal id generator
+* **extra** an object that you can use to add extra info int the log entry
 
 **some notes:**
 * should use the plugin after the definiton of the http method to use
