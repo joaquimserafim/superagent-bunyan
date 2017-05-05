@@ -189,7 +189,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.headers).to.be.an('object')
-            expect(log2.method).to.be.equal('GET')
             done()
           })
         })
@@ -210,7 +209,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.headers).to.be.an('object')
-            expect(log2.method).to.be.equal('GET')
             done()
           })
         })
@@ -236,7 +234,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.headers).to.be.an('object')
-            expect(log2.method).to.be.equal('POST')
             done()
           })
         })
@@ -259,7 +256,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.body).to.be.deep.equal({msg: 'Hello World!'})
             expect(log2.res.headers).to.be.an('object')
-            expect(log2.method).to.be.equal('GET')
             done()
           })
         })
@@ -282,7 +278,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.headers).to.be.an('object')
-            expect(log2.method).to.be.equal('GET')
             done()
           })
         })
@@ -307,7 +302,59 @@ describe('superagent-bunyan', () => {
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
             expect(log2.res.headers).to.be.an('object')
-            expect(log2.method).to.be.equal('GET')
+            done()
+          })
+        })
+    })
+
+    it('using `extra` to pass extra info in the log entry', (done) => {
+      request
+        .get('http://localhost:3000/someuuidbutdontsend')
+        .use(
+          superagentLogger(
+            logger,
+            {extra: 'But then again, who does?'}
+          )
+        )
+        .end((err, res) => {
+          expect(err).to.be.a('null')
+          expect(res).to.be.an('object')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
+            expect(log1.extra).to.be.equal('But then again, who does?')
+            expect(log2.err).to.not.exist
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
+            expect(log2.extra).to.be.equal('But then again, who does?')
+            done()
+          })
+        })
+    })
+
+    it('passing the request id and using `extra` arg', (done) => {
+      request
+        .get('http://localhost:3000/someuuidbutdontsend')
+        .use(
+          superagentLogger(
+            logger,
+            1234,
+            {extra: 'But then again, who does?'}
+          )
+        )
+        .end((err, res) => {
+          expect(err).to.be.a('null')
+          expect(res).to.be.an('object')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.an('undefined')
+            expect(log1.extra).to.be.equal('But then again, who does?')
+            expect(log2.err).to.not.exist
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
+            expect(log2.extra).to.be.equal('But then again, who does?')
             done()
           })
         })
@@ -327,7 +374,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res.statusCode).to.be.equal(404)
             expect(log2.res.headers).to.be.an('object')
             expect(log2.err.name).to.be.equal('Error')
-            expect(log2.method).to.be.equal('GET')
             done()
           })
         })
@@ -345,7 +391,6 @@ describe('superagent-bunyan', () => {
             expect(log2.res).to.be.an('object')
             expect(log2.err).to.be.an('object')
             expect(log2.err.name).to.be.equal('Error')
-            expect(log2.method).to.be.equal('GET')
             done()
           })
         })
@@ -382,8 +427,6 @@ function testLogRecords (records, runExtraExpections) {
       expect(record.req.headers).to.be.an('object')
     } else { // the response
       expect(record.msg).to.be.equal('end of the request')
-      expect(record.service).to.be.a('string')
-      expect(record.method).to.be.a('string')
       expect(record.duration).to.be.a('number')
     }
   }
