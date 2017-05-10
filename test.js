@@ -182,6 +182,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -202,6 +203,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('object')
@@ -222,6 +224,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -247,6 +250,7 @@ describe('superagent-bunyan', () => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
           expect(res.body).to.be.deep.equal({msg: 'Hello World!'})
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -270,6 +274,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('object')
@@ -295,6 +300,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -319,6 +325,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -346,6 +353,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.a('null')
           expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -366,6 +374,7 @@ describe('superagent-bunyan', () => {
         .use(superagentLogger(logger))
         .end((err, res) => {
           expect(err).to.exist
+          expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(3), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')
@@ -383,8 +392,9 @@ describe('superagent-bunyan', () => {
       request
         .get('http://localhost:3001')
         .use(superagentLogger(logger))
-        .end((err, res) => {
+        .end((err) => {
           expect(err).to.exist
+          expect(err.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.an('undefined')

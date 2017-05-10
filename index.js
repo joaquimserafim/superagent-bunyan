@@ -58,13 +58,16 @@ function logger (bunyan, requestId, extra) {
 
     function onError (err) {
       // if isn't a http error the onend will not be called
-      endTime = endTime || process.hrtime(startTime)
+      if (!endTime) {
+        endTime = getTimeMs(process.hrtime(startTime))
+        err = Object.assign(err, {opDuration: endTime})
+      }
 
       log.error(
         {
           res: appendRes,
           err: err,
-          duration: endTime[0] * 1e3 + endTime[1] * 1e-6
+          duration: endTime
         },
         'end of the request'
       )
@@ -73,13 +76,17 @@ function logger (bunyan, requestId, extra) {
     // in case of res.error should fallback to the error emitter
     // and should pass the res object
     function onResponse (res) {
+      endTime = getTimeMs(endTime)
+
+      res = Object.assign(res, {opDuration: endTime})
+
       if (res.error) {
         appendRes = res
       } else {
         log.info(
           {
             res: res,
-            duration: endTime[0] * 1e3 + endTime[1] * 1e-6
+            duration: endTime
           },
           'end of the request'
         )
@@ -87,6 +94,10 @@ function logger (bunyan, requestId, extra) {
     }
   }
 }
+
+//
+// help functions
+//
 
 function id () {
   return new Date().getTime().toString(36) +
@@ -114,3 +125,8 @@ function reqSerializer (req) {
     headers: req.header
   }
 }
+
+function getTimeMs (endTime) {
+  return endTime[0] * 1e3 + endTime[1] * 1e-6
+}
+
