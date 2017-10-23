@@ -119,7 +119,7 @@ function reqSerializer (req) {
   return {
     method: req.method,
     url: req.url,
-    qs: objectSize(req.qs) ? req.qs : undefined,
+    qs: getQs(req),
     path: req.url && url.parse(req.url).pathname,
     body: req._data,
     headers: req.header
@@ -130,3 +130,14 @@ function getTimeMs (endTime) {
   return endTime[0] * 1e3 + endTime[1] * 1e-6
 }
 
+function getQs (req) {
+  return objectSize(req.qs)
+    ? req.qs
+    : getRawQs(req)
+}
+
+function getRawQs (req) {
+  return req.qsRaw && req.qsRaw.length
+    ? req.qsRaw.join('&')
+    : undefined
+}
