@@ -414,7 +414,7 @@ describe('superagent-bunyan', () => {
         .get('http://localhost:3001')
         .use(superagentLogger(logger))
         .end((err) => {
-          expect(err).to.exist
+          expect(err).to.be.an('error')
           expect(err.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
