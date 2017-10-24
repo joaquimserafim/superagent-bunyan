@@ -216,6 +216,27 @@ describe('superagent-bunyan', () => {
         })
     })
 
+    it('request with raw query string', (done) => {
+      request
+        .get('http://localhost:3000')
+        .query('a=1&b=2')
+        .use(superagentLogger(logger))
+        .end((err, res) => {
+          expect(err).to.be.a('null')
+          expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.equal('a=1&b=2')
+            expect(log2.err).to.not.exist
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
+            done()
+          })
+        })
+    })
+
     it('send a request with payload', (done) => {
       request
         .post('http://localhost:3000')
