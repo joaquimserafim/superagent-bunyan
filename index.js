@@ -13,7 +13,8 @@ const isObject      = require('is.object')
 
 module.exports = logger
 
-function logger (bunyan, requestId, extra) {
+function logger (bunyan, requestId, extra, options) {
+  options = options || {}
 
   if (isObject(requestId)) {
     extra = requestId
@@ -36,7 +37,7 @@ function logger (bunyan, requestId, extra) {
             req_id: req.id,
             serializers: {
               err: bunyan.constructor.stdSerializers.err,
-              req: reqSerializer,
+              req: reqSerializerGenerator(options.obscureHeaders),
               res: resSerializer
             }
           },
@@ -114,15 +115,35 @@ function resSerializer (res) {
   }
 }
 
-function reqSerializer (req) {
+function reqSerializerGenerator (obscureHeaders) {
+  const lowercasedObscureHeaders =
+    (obscureHeaders || []).map(function (header) {
+      return header.toLowerCase()
+    })
 
-  return {
-    method: req.method,
-    url: req.url,
-    qs: getQs(req),
-    path: req.url && url.parse(req.url).pathname,
-    body: req._data,
-    headers: req.header
+  function filterOutHeaders (headers) {
+    const filteredHeaders = {};
+
+    Object.keys(headers || {}).forEach(function (headerName) {
+      if (lowercasedObscureHeaders.includes(headerName)) {
+        filteredHeaders[headerName] = '[hidden]'
+      } else {
+        filteredHeaders[headerName] = headers[headerName]
+      }
+    })
+
+    return filteredHeaders
+  }
+
+  return function reqSerializer (req) {
+    return {
+      method: req.method,
+      url: req.url,
+      qs: getQs(req),
+      path: req.url && url.parse(req.url).pathname,
+      body: req._data,
+      headers: filterOutHeaders(req.header)
+    }
   }
 }
 
