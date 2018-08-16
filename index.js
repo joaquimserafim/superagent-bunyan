@@ -6,7 +6,6 @@ max-len: ["error", 80]
 */
 'use strict'
 
-const getPropValue  = require('get-property-value')
 const objectSize    = require('object.size')
 const url           = require('url')
 const isObject      = require('is.object')
@@ -27,7 +26,7 @@ function logger (bunyan, requestId, extra) {
     let endTime     = 0
     const startTime = process.hrtime()
 
-    req.id = requestId || getPropValue(req.header, 'X-Request-ID') || id()
+    req.id = requestId || getXRequestIdValueFromReq(req) || id()
 
     const log = bunyan
       .child(Object
@@ -140,4 +139,25 @@ function getRawQs (req) {
   return req.qsRaw && req.qsRaw.length
     ? req.qsRaw.join('&')
     : undefined
+}
+
+function getXRequestIdValueFromReq (req) {
+  if (!isObject(req) || !isObject(req.header)) {
+    return undefined
+  }
+
+  let headerName
+
+  for (const h in req.header) {
+    if (h.toLowerCase() === 'x-request-id') {
+      headerName = h
+      break
+    }
+  }
+
+  if (!headerName) {
+    return undefined
+  }
+
+  return req.header[headerName]
 }
