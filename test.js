@@ -178,6 +178,7 @@ describe('superagent-bunyan', () => {
     it('normal request', (done) => {
       request
         .get('http://localhost:3000')
+        .set('header', 'headerValue')
         .use(superagentLogger(logger))
         .end((err, res) => {
           expect(err).to.be.a('null')
@@ -186,6 +187,33 @@ describe('superagent-bunyan', () => {
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.deep.equal(undefined)
+            expect(log1.req.headers.header).to.equal('headerValue')
+            expect(log2.err).to.be.deep.equal(undefined)
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
+            done()
+          })
+        })
+    })
+
+    it('excludes headers when requested', (done) => {
+      request
+        .get('http://localhost:3000')
+        .set('header', 'headerValue')
+        .set('secret', 'secretValue')
+        .use(superagentLogger(logger, undefined, undefined, {
+          obscureHeaders: [ 'secret' ]
+        }))
+        .end((err, res) => {
+          expect(err).to.be.a('null')
+          expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.deep.equal(undefined)
+            expect(log1.req.headers.header).to.equal('headerValue')
+            expect(log1.req.headers.secret).to.equal('[hidden]')
             expect(log2.err).to.be.deep.equal(undefined)
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
