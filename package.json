@@ -40,7 +40,6 @@
     "superagent": "^3.7.0"
   },
   "dependencies": {
-    "get-property-value": "^2.0.0",
     "is.object": "^1.0.0",
     "object.size": "^1.0.0"
   },

@@ -39,6 +39,8 @@ const logger = bunyan.createLogger(
   }
 )
 
+const REQUEST_ID = 'Quite an experience to live in fear, isn\'t it?';
+
 var server
 
 describe('superagent-bunyan', () => {
@@ -158,8 +160,7 @@ describe('superagent-bunyan', () => {
       app.get('/someuuid', (req, res) => {
         expect(req.query).to.be.deep.equal({a: '123'})
         expect(req.headers).to.have.deep.property('x-request-id')
-        expect(req.headers['x-request-id'])
-          .to.be.equal('Quite an experience to live in fear, isn\'t it?')
+        expect(req.headers['x-request-id']).to.be.equal(REQUEST_ID)
         res.send('Hello World!')
       })
 
@@ -290,7 +291,7 @@ describe('superagent-bunyan', () => {
       request
         .get('http://localhost:3000/someuuid')
         .query({a: 123})
-        .set('X-Request-ID', 'Quite an experience to live in fear, isn\'t it?')
+        .set('X-Request-ID', REQUEST_ID)
         .use(superagentLogger(logger))
         .end((err, res) => {
           expect(err).to.be.deep.equal(null)
@@ -298,6 +299,33 @@ describe('superagent-bunyan', () => {
           expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req_id).to.equal(REQUEST_ID)
+            expect(log2.req_id).to.equal(REQUEST_ID)
+            expect(log1.req.qs).to.be.an('object')
+            expect(log1.req.path).to.be.equal('/someuuid')
+            expect(log2.err).to.be.deep.equal(undefined)
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.statusCode).to.be.equal(200)
+            expect(log2.res.headers).to.be.an('object')
+            done()
+          })
+        })
+    })
+
+    it('pick the X-Request-ID from the headers case-insensitively', (done) => {
+      request
+        .get('http://localhost:3000/someuuid')
+        .query({a: 123})
+        .set('x-request-id', REQUEST_ID)
+        .use(superagentLogger(logger))
+        .end((err, res) => {
+          expect(err).to.be.deep.equal(null)
+          expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req_id).to.equal(REQUEST_ID)
+            expect(log2.req_id).to.equal(REQUEST_ID)
             expect(log1.req.qs).to.be.an('object')
             expect(log1.req.path).to.be.equal('/someuuid')
             expect(log2.err).to.be.deep.equal(undefined)
@@ -315,7 +343,7 @@ describe('superagent-bunyan', () => {
         .use(
           superagentLogger(
             logger,
-            'Quite an experience to live in fear, isn\'t it?'
+            REQUEST_ID
           )
         )
         .end((err, res) => {
