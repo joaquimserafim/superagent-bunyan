@@ -426,6 +426,27 @@ describe('superagent-bunyan', () => {
           })
         })
     })
+
+    it('using custom origin in the log entry', (done) => {
+      request
+        .get('http://localhost:3000/someuuidbutdontsend')
+        .use(
+          superagentLogger(
+            logger.child({ origin: 'custom' }),
+            {extra: 'But then again, who does?'}
+          )
+        )
+        .end((err, res) => {
+          expect(err).to.be.deep.equal(null)
+          expect(res).to.be.an('object')
+          expect(res.opDuration).to.be.a('number')
+
+          const records = getRecords()
+          expect(records[0].origin).to.be.equal('custom')
+          expect(records[1].origin).to.be.equal('custom')
+          done()
+        })
+    })
   })
 })
 

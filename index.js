@@ -32,7 +32,7 @@ function logger (bunyan, requestId, extra) {
     const log = bunyan
       .child(Object
           .assign({
-            origin: 'superagent',
+            origin: getPropValue(bunyan.fields, 'origin') || 'superagent',
             req_id: req.id,
             serializers: {
               err: bunyan.constructor.stdSerializers.err,
