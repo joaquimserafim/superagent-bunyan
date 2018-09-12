@@ -46,7 +46,7 @@ describe('superagent-bunyan', () => {
   describe('unit', () => {
 
     it('when follows the normal path', (done) => {
-      const resBody = {statusCode: 200, header: {}, body: 'hello'}
+      const resBody = { statusCode: 200, header: {}, body: 'hello' }
 
       let requestEmitter = new EE()
 
@@ -152,11 +152,11 @@ describe('superagent-bunyan', () => {
       })
 
       app.get('/json', (req, res) => {
-        res.send({msg: 'Hello World!'})
+        res.send({ msg: 'Hello World!' })
       })
 
       app.get('/someuuid', (req, res) => {
-        expect(req.query).to.be.deep.equal({a: '123'})
+        expect(req.query).to.be.deep.equal({ a: '123' })
         expect(req.headers).to.have.deep.property('x-request-id')
         expect(req.headers['x-request-id'])
           .to.be.equal('Quite an experience to live in fear, isn\'t it?')
@@ -198,7 +198,7 @@ describe('superagent-bunyan', () => {
     it('request with query string', (done) => {
       request
         .get('http://localhost:3000')
-        .query({a: 1, b: 2})
+        .query({ a: 1, b: 2 })
         .use(superagentLogger(logger))
         .end((err, res) => {
           expect(err).to.be.deep.equal(null)
@@ -240,7 +240,7 @@ describe('superagent-bunyan', () => {
     it('send a request with payload', (done) => {
       request
         .post('http://localhost:3000')
-        .send({msg: 'More human than human is our motto'})
+        .send({ msg: 'More human than human is our motto' })
         .use(superagentLogger(logger))
         .end((err, res) => {
           expect(err).to.be.deep.equal(null)
@@ -253,7 +253,7 @@ describe('superagent-bunyan', () => {
             expect(log1.req.url).to.be
               .equal('http://localhost:3000')
             expect(log1.req.body).to.be.deep
-              .equal({msg: 'More human than human is our motto'})
+              .equal({ msg: 'More human than human is our motto' })
             expect(log2.err).to.be.deep.equal(undefined)
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.deep.equal(200)
@@ -270,7 +270,7 @@ describe('superagent-bunyan', () => {
         .end((err, res) => {
           expect(err).to.be.deep.equal(null)
           expect(res).to.be.an('object')
-          expect(res.body).to.be.deep.equal({msg: 'Hello World!'})
+          expect(res.body).to.be.deep.equal({ msg: 'Hello World!' })
           expect(res.opDuration).to.be.a('number')
 
           testLogRecords(getRecords(), (log1, log2) => {
@@ -279,7 +279,7 @@ describe('superagent-bunyan', () => {
             expect(log2.err).to.be.deep.equal(undefined)
             expect(log2.res).to.be.an('object')
             expect(log2.res.statusCode).to.be.equal(200)
-            expect(log2.res.body).to.be.deep.equal({msg: 'Hello World!'})
+            expect(log2.res.body).to.be.deep.equal({ msg: 'Hello World!' })
             expect(log2.res.headers).to.be.an('object')
             done()
           })
@@ -289,7 +289,7 @@ describe('superagent-bunyan', () => {
     it('pick the X-Request-ID from the headers', (done) => {
       request
         .get('http://localhost:3000/someuuid')
-        .query({a: 123})
+        .query({ a: 123 })
         .set('X-Request-ID', 'Quite an experience to live in fear, isn\'t it?')
         .use(superagentLogger(logger))
         .end((err, res) => {
@@ -340,7 +340,7 @@ describe('superagent-bunyan', () => {
         .use(
           superagentLogger(
             logger,
-            {extra: 'But then again, who does?'}
+            { extra: 'But then again, who does?' }
           )
         )
         .end((err, res) => {
@@ -368,7 +368,7 @@ describe('superagent-bunyan', () => {
           superagentLogger(
             logger,
             1234,
-            {extra: 'But then again, who does?'}
+            { extra: 'But then again, who does?' }
           )
         )
         .end((err, res) => {
@@ -433,7 +433,7 @@ describe('superagent-bunyan', () => {
         .use(
           superagentLogger(
             logger.child({ origin: 'custom' }),
-            {extra: 'But then again, who does?'}
+            { extra: 'But then again, who does?' }
           )
         )
         .end((err, res) => {

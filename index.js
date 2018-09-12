@@ -31,20 +31,20 @@ function logger (bunyan, requestId, extra) {
 
     const log = bunyan
       .child(Object
-          .assign({
-            origin: getPropValue(bunyan.fields, 'origin') || 'superagent',
-            req_id: req.id,
-            serializers: {
-              err: bunyan.constructor.stdSerializers.err,
-              req: reqSerializer,
-              res: resSerializer
-            }
-          },
-          isObject(extra) ? extra : {}
+        .assign({
+          origin: getPropValue(bunyan.fields, 'origin') || 'superagent',
+          req_id: req.id,
+          serializers: {
+            err: bunyan.constructor.stdSerializers.err,
+            req: reqSerializer,
+            res: resSerializer
+          }
+        },
+        isObject(extra) ? extra : {}
         )
       )
 
-    log.info({req: req}, 'start of the request')
+    log.info({ req: req }, 'start of the request')
 
     req.once('end', onEnd)
     req.once('error', onError)
@@ -60,7 +60,7 @@ function logger (bunyan, requestId, extra) {
       // if isn't a http error the onend will not be called
       if (!endTime) {
         endTime = getTimeMs(process.hrtime(startTime))
-        err = Object.assign(err, {opDuration: endTime})
+        err = Object.assign(err, { opDuration: endTime })
       }
 
       log.error(
@@ -78,7 +78,7 @@ function logger (bunyan, requestId, extra) {
     function onResponse (res) {
       endTime = getTimeMs(endTime)
 
-      res = Object.assign(res, {opDuration: endTime})
+      res = Object.assign(res, { opDuration: endTime })
 
       if (res.error) {
         appendRes = res
