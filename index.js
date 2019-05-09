@@ -65,6 +65,7 @@ function logger (bunyan, requestId, extra) {
 
       log.error(
         {
+          req: req,
           res: appendRes,
           err: err,
           duration: endTime
@@ -85,6 +86,7 @@ function logger (bunyan, requestId, extra) {
       } else {
         log.info(
           {
+            req: req,
             res: res,
             duration: endTime
           },

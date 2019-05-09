@@ -474,14 +474,14 @@ function testLogRecords (records, runExtraExpections) {
     // the initial request
     if (!index) {
       expect(record.msg).to.be.equal('start of the request')
-      expect(record.req).to.be.an('object')
-      expect(record.req.method).to.be.a('string')
-      expect(record.req.url).to.be.a('string')
-      expect(record.req.headers).to.be.an('object')
     } else { // the response
       expect(record.msg).to.be.equal('end of the request')
       expect(record.duration).to.be.a('number')
     }
+    expect(record.req).to.be.an('object')
+    expect(record.req.method).to.be.a('string')
+    expect(record.req.url).to.be.a('string')
+    expect(record.req.headers).to.be.an('object')
   }
 }
 
