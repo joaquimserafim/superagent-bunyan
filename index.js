@@ -10,6 +10,7 @@ const getPropValue  = require('get-property-value')
 const objectSize    = require('object.size')
 const url           = require('url')
 const isObject      = require('is.object')
+const merge         = require('lodash.merge')
 
 module.exports = logger
 
@@ -23,26 +24,25 @@ function logger (bunyan, requestId, extra) {
   return runLogger
 
   function runLogger (req) {
-    let appendRes   = {}
     let endTime     = 0
     const startTime = process.hrtime()
 
     req.id = requestId || getPropValue(req.header, 'X-Request-ID') || id()
 
-    const log = bunyan
-      .child(Object
-        .assign({
-          origin: getPropValue(bunyan.fields, 'origin') || 'superagent',
-          req_id: req.id,
-          serializers: {
-            err: bunyan.constructor.stdSerializers.err,
-            req: reqSerializer,
-            res: resSerializer
-          }
-        },
-        isObject(extra) ? extra : {}
-        )
-      )
+    const bunyanOpts = merge(
+      {
+        origin: getPropValue(bunyan.fields, 'origin') || 'superagent',
+        req_id: req.id,
+        serializers: {
+          err: bunyan.constructor.stdSerializers.err,
+          req: reqSerializer,
+          res: resSerializer
+        }
+      },
+      isObject(extra) ? extra : {}
+    )
+
+    const log = bunyan.child(bunyanOpts)
 
     log.info({ req: req }, 'start of the request')
 
@@ -65,7 +65,7 @@ function logger (bunyan, requestId, extra) {
 
       log.error(
         {
-          res: appendRes,
+          res: err.response,
           err: err,
           duration: endTime
         },
@@ -80,9 +80,7 @@ function logger (bunyan, requestId, extra) {
 
       res = Object.assign(res, { opDuration: endTime })
 
-      if (res.error) {
-        appendRes = res
-      } else {
+      if (!res.error) {
         log.info(
           {
             res: res,
