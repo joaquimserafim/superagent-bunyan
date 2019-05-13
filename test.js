@@ -168,6 +168,10 @@ describe('superagent-bunyan', () => {
         res.send('Hello World!')
       })
 
+      app.get('/5xx-error', (req, res) => {
+        res.status(500).json({ error: true })
+      })
+
       server = app.listen(3000, done)
     })
 
@@ -419,8 +423,29 @@ describe('superagent-bunyan', () => {
 
           testLogRecords(getRecords(), (log1, log2) => {
             expect(log1.req.qs).to.be.deep.equal(undefined)
-            expect(log2.res).to.be.an('object')
+            expect(log2.res).to.equal(undefined)
             expect(log2.err).to.be.an('object')
+            expect(log2.err.name).to.be.equal('Error')
+            done()
+          })
+        })
+    })
+
+    it('receive a 500 error', (done) => {
+      request
+        .get('http://localhost:3000/5xx-error')
+        .use(superagentLogger(logger))
+        .end((err, res) => {
+          expect(err).to.be.an('error')
+          expect(res.opDuration).to.be.a('number')
+
+          testLogRecords(getRecords(), (log1, log2) => {
+            expect(log1.req.qs).to.be.deep.equal(undefined)
+            expect(log2.err).to.be.an('object')
+            expect(log2.res).to.be.an('object')
+            expect(log2.res.body).to.deep.equal({ error: true })
+            expect(log2.res.statusCode).to.be.equal(500)
+            expect(log2.res.headers).to.be.an('object')
             expect(log2.err.name).to.be.equal('Error')
             done()
           })
